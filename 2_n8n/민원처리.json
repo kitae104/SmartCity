@@ -1,0 +1,337 @@
+{
+  "name": "민원처리",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "민원 접수",
+        "formDescription": "민원이 있는 경우 이곳에서 신고하세요.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "이름",
+              "placeholder": "이름을 입력하세요.",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "연락처",
+              "placeholder": "연락처를 입력하세요.",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "이메일",
+              "fieldType": "email",
+              "placeholder": "연락 받을 이메일을 입력하세요.",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "쓰레기종류",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "생활 쓰레기"
+                  },
+                  {
+                    "option": "건축 폐기물"
+                  },
+                  {
+                    "option": "대형 폐기물"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "상세설명",
+              "fieldType": "textarea",
+              "placeholder": "투기된 쓰레기에 대한 상세한 설명을 입력해주세요.",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "path": "garbage"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "db48f396-b12b-44bd-945d-35482d69daee",
+      "name": "민원 입력 폼",
+      "webhookId": "f8a53702-4876-4fed-912b-215c9a305479"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1EW6EYd3mOgojECt_wRYQTFoNMiCWWM0stDGAKSZlxcU",
+          "mode": "list",
+          "cachedResultName": "민원 처리 리스트",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EW6EYd3mOgojECt_wRYQTFoNMiCWWM0stDGAKSZlxcU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "시트1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EW6EYd3mOgojECt_wRYQTFoNMiCWWM0stDGAKSZlxcU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "이름": "={{ $json['이름'] }}",
+            "연락처": "={{ $json['연락처'] }}",
+            "쓰레기종류": "={{ $json['쓰레기종류'] }}",
+            "상세설명": "={{ $json['상세설명'] }}",
+            "등록일": "={{ $json.submittedAt }}",
+            "이메일": "={{ $json['이메일'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "이름",
+              "displayName": "이름",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "연락처",
+              "displayName": "연락처",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "이메일",
+              "displayName": "이메일",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "쓰레기종류",
+              "displayName": "쓰레기종류",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "상세설명",
+              "displayName": "상세설명",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "등록일",
+              "displayName": "등록일",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "310ae79e-6a07-40ad-a2e2-e97071996e59",
+      "name": "민원 접수 내용",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RqotCZeGbgVxGqRM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{JSON.stringify($json[0])}}\n\n[지시사항]\n이 데이터를 바탕으로, 담당 부서에 업무 처리를 요청하기 위한 공식적인 이메일 **본문(Body)** 내용만을 순수한 텍스트로 생성해 주세요.\n\n[작성 규칙]\n1.  **시작:** \"담당팀장님께,\"로 시작하고 두 줄을 띄워주세요.\n2.  **내용:** 입력된 JSON 데이터의 모든 키와 값을 목록 형식으로 포함하세요.\n    * '이름'({{ $json['이름'] }})은 '접수자명'으로 표시하세요.\n    * '쓰레기종류'($json['쓰레기종류'])는 '쓰레기 종류'로 표시하세요.\n    * '상세설명'($json['상세설명'])은 '상세 설명'으로 표시하세요.\n3.  **날짜 형식:** '등록일'($json['등록일']) 데이터는 \"YYYY년 MM월 DD일 HH시 mm분\" 형식으로 변환하여 표시해 주세요.\n4.  **마무리:** 목록이 끝난 후 두 줄을 띄우고 \"내용 확인 후 신속한 처리 바랍니다.\"와 \"감사합니다.\"를 포함하세요.\n5.  **[매우 중요] 출력 형식:**\n    * 응답은 **오직** 순수한 텍스트 문자열이어야 합니다.\n    * 절대 '제목:', '본문:', JSON 형식(`{}`), Markdown(```) 또는 기타 설명, 인사말을 포함하지 마세요.\n\n[예시 출력 (이 형식과 정확히 일치해야 함)]\n담당팀장님께,\n\n- 접수자명: {{ $json['이름'] }}\n- 연락처: {{ $json['연락처'] }}\n- 이메일: {{ $json['이메일'] }}\n- 쓰레기 종류: {{ $json['쓰레기종류'] }}\n- 상세 설명: {{ $json['상세설명'] }}\n- 접수일: 2025년 11월 01일 23시 16분\n\n내용 확인 후 신속한 처리 바랍니다.\n\n감사합니다.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        464,
+        80
+      ],
+      "id": "af5e3b44-4e12-4fe4-8e08-108febd08d49",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        384,
+        272
+      ],
+      "id": "56eee41e-a361-4b35-b8b3-18d67e3c40e9",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "lEiFohE4gmFzOmPi",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json['이메일'] }}",
+        "subject": "문의 사항 접수 확인",
+        "message": "=안녕하세요 {{ $json['이름'] }}님,\n\n문의가 정상적으로 접수되었습니다.\n빠른 시일 내에 답변 드리겠습니다.\n\n감사합니다.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        480,
+        -112
+      ],
+      "id": "e7c02e48-0073-49f6-98f6-b1712d81dbaa",
+      "name": "접수 알림 메일",
+      "webhookId": "c5b9c466-e442-4a97-9d31-da2ece2d7682",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "fdTUm3fb6yJXywka",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "=aqua0405@gmail.com",
+        "subject": "민원 접수",
+        "emailType": "text",
+        "message": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        800,
+        80
+      ],
+      "id": "1108579f-37d0-4206-b9da-e6a082439f8b",
+      "name": "담당자 배정 메일",
+      "webhookId": "c5b9c466-e442-4a97-9d31-da2ece2d7682",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "fdTUm3fb6yJXywka",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "민원 접수 내용": [
+      {
+        "json": {
+          "이름": "김기태",
+          "연락처": "010-1111-1111",
+          "쓰레기종류": "건축 폐기물",
+          "상세설명": "건축물 폐기물이 방치되어 있어요.",
+          "등록일": "2025-11-01T23:16:00.051+09:00",
+          "이메일": "aqua0405@gmail.com"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "민원 입력 폼": {
+      "main": [
+        [
+          {
+            "node": "민원 접수 내용",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "민원 접수 내용": {
+      "main": [
+        [
+          {
+            "node": "접수 알림 메일",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "담당자 배정 메일",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "4ba569ac-013c-4043-928d-8f45de54cda8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f88b07c9a10678c5f605685277d152fe6ae48ccb3a4fbeafa2761cb2980008a4"
+  },
+  "id": "XeweP21JLiBRQf1F",
+  "tags": []
+}
